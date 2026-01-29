@@ -1,0 +1,36 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+.Spotlight-V100
+.Trashes
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# Neovim / Vim
+[._]*.s[a-v][a-z]
+[._]*.sw[a-p]
+.netrwhist
+*~
+tags
+shada
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Local environment variables (Safety)
+.env
+.env.local
+.env.*.local
+
+# Tool-specific
+.terraform/
+.vagrant/
+.ansible_cache/

@@ -1,0 +1,9 @@
+python
+verilog
+bazel
+lua
+vim
+vimdoc
+query
+markdown
+markdown_inline

@@ -1,0 +1,42 @@
+[user]
+    name = Robert Schilling
+    email = rschilling@rivosinc.com
+
+[core]
+    editor = nvim
+    # Handle line endings: input on Mac/Linux, CRLF on Windows
+    autocrlf = input
+    # Speed up status on large repos
+    untrackedCache = true
+    # Global gitignore
+    excludesfile = ~/.gitignore_global
+
+[init]
+    defaultBranch = main
+
+[color]
+    ui = auto
+
+[alias]
+    st = status
+    co = checkout
+    br = branch
+    cm = commit
+    # A beautiful log view
+    lg = log --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit
+
+[pull]
+    rebase = true
+
+[push]
+    autoSetupRemote = true
+
+[diff]
+    # Use a mnemonic prefix (i/o for input/output)
+    mnemonicPrefix = true
+    # Detect renames
+    renames = copies
+
+[help]
+    # Correct minor typos automatically (e.g., git stats -> git status)
+    autocorrect = 1
