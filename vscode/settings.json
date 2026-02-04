@@ -1,0 +1,27 @@
+{
+    // --- Terminal & Meta Key Fix ---
+    "terminal.integrated.macOptionIsMeta": true,
+    "terminal.integrated.cursorStyle": "block",
+    
+    // --- Appearance (Match your terminal) ---
+    "editor.fontFamily": "'JetBrainsMono Nerd Font', 'Menlo', 'Monaco', 'Courier New', monospace",
+    "editor.fontLigatures": true,
+    "editor.fontSize": 14,
+    "workbench.colorTheme": "Catppuccin Mocha",
+    "editor.semanticHighlighting.enabled": true,
+  
+    // --- Vim Behavior ---
+    "vim.useSystemClipboard": true,
+    "vim.hlsearch": true,
+    "vim.incsearch": true,
+    "vim.easymotion": true,
+    "vim.leader": "<space>",
+    "editor.lineNumbers": "relative",
+    "editor.cursorStyle": "block",
+  
+    // --- Clean Up UI ---
+    "workbench.startupEditor": "none",
+    "editor.minimap.enabled": false,
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false
+}

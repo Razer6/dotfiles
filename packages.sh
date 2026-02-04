@@ -9,12 +9,16 @@ COMMON_PACKAGES=(
     "fzf"
     "ripgrep"
     "make"
+    "fzf"
+    "zoxide"
 )
 
 # Truly OS-specific tools or different names
 MAC_PACKAGES=(
     "fd"
     "gcc"
+    "visual-studio-code"
+    "ghostty"
 )
 
 # RHEL/Rocky specific
@@ -31,4 +35,6 @@ DEBIAN_PACKAGES=(
     "gcc"
     "g++"
     "unzip"
+    "code"
+    "ghostty"
 )

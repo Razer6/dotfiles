@@ -1,0 +1,28 @@
+# --- Window Management ---
+window-decoration = true
+maximize = true
+
+# --- Clipboard & Mouse ---
+# Ghostty nutzt standardmäßig das System-Clipboard, diese Zeilen sind meist unnötig:
+copy-on-select = true
+mouse-hide-while-typing = true
+
+# --- Shell Integration ---
+shell-integration = detect
+
+# --- Theme ---
+theme = Catppuccin Mocha
+
+# --- Window Splitting ---
+# Syntax: keybind = Taste=Aktion
+keybind = super+d=new_split:right
+keybind = super+shift+d=new_split:down
+
+# Switch between splits
+keybind = ctrl+alt+left=goto_split:left
+keybind = ctrl+alt+right=goto_split:right
+
+# --- Font ---
+keybind = super+plus=increase_font_size:1
+keybind = super+minus=decrease_font_size:1
+keybind = super+zero=reset_font_size
