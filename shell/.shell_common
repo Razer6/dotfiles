@@ -5,6 +5,8 @@
 # ---------------------------------------------------------
 # Environment & Pathing
 # ---------------------------------------------------------
+[ -d "$HOME/.local/bin" ] && export PATH="$HOME/.local/bin:$PATH"
+
 if [ "$(uname)" = "Darwin" ]; then
     if [ -f /opt/homebrew/bin/brew ]; then
         eval "$(/opt/homebrew/bin/brew shellenv)"
