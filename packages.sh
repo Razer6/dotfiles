@@ -18,6 +18,7 @@ MAC_PACKAGES=(
     "gcc"
     "visual-studio-code"
     "ghostty"
+    "font-jetbrains-mono-nerd-font"
 )
 
 # RHEL/Rocky specific
