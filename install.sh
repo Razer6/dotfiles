@@ -156,7 +156,7 @@ fi
 # ---------------------------------------------------------
 echo "Linking configurations..."
 
-IGNORE_LIST=("vscode" "macos" "." ".." ${SKIP_LIST[@]+"${SKIP_LIST[@]}"})
+IGNORE_LIST=("vscode" "macos" "scripts" "." ".." ${SKIP_LIST[@]+"${SKIP_LIST[@]}"})
 
 link_package() {
     local pkg_dir="${1%/}"
