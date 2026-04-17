@@ -65,7 +65,7 @@ fi
 # Fuzzy Jump (zoxide + fzf)
 fj() {
   local dir
-  dir=$(zoxide query -l | fzf --height 40% --layout=reverse --border --preview 'ls -F --color=auto {1}') && cd "$dir"
+  dir=$(zoxide query -l | fzf --height 40% --layout=reverse --border --preview 'ls -F -G {1}') && cd "$dir"
 }
 
 if command -v fdfind &> /dev/null; then alias fd='fdfind'; fi
@@ -81,8 +81,14 @@ fi
 # ---------------------------------------------------------
 # 6. Prompt & Terminal
 # ---------------------------------------------------------
-PROMPT='%F{cyan}%n@%m %F{blue}%1~ %F{white}%# '
-export TERM="xterm-256color"
+if command -v starship &> /dev/null; then
+    eval "$(starship init zsh)"
+else
+    PROMPT='%F{cyan}%n@%m %F{blue}%1~ %F{white}%# '
+fi
+if [[ -z "$TMUX" ]]; then
+    export TERM="xterm-256color"
+fi
 
 # ---------------------------------------------------------
 # 7. Zoxide, FZF, and Substring Search

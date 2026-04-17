@@ -4,10 +4,35 @@ set -e
 set -u
 set -o pipefail
 
+SKIP_DEPS=false
+SKIP_LIST=()
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --no-deps) SKIP_DEPS=true ;;
+        --skip)
+            IFS=',' read -ra items <<< "$2"
+            SKIP_LIST+=("${items[@]}")
+            shift
+            ;;
+    esac
+    shift
+done
+
+should_skip() {
+    local name="$1"
+    for item in "${SKIP_LIST[@]+"${SKIP_LIST[@]}"}"; do
+        [[ "$item" == "$name" ]] && return 0
+    done
+    return 1
+}
+
 # Discover the absolute path of the script's directory
 # This works even if you run the script from a different folder
 DOTFILES_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 OS=$(uname)
+
+if [ "$SKIP_DEPS" = false ]; then
 
 # 1. Load Package Manifest
 if [ -f "$DOTFILES_DIR/packages.sh" ]; then
@@ -25,19 +50,21 @@ echo "Starting installation for $OS..."
 case "$OS" in
     Darwin)
         echo "Detected macOS (Apple Silicon)"
-        
+
         # Install Homebrew if missing
         if ! command -v brew &> /dev/null; then
             echo "Installing Homebrew..."
             /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
             eval "$(/opt/homebrew/bin/brew shellenv)"
         fi
-        
+
         echo "Installing packages via Homebrew..."
         brew install "${COMMON_PACKAGES[@]}" "${MAC_PACKAGES[@]}"
-        
+
         # Run macOS system defaults
-        if [ -f "$DOTFILES_DIR/macos/set-defaults.sh" ]; then
+        if should_skip "macos"; then
+            echo "Skipping macOS defaults (--skip)"
+        elif [ -f "$DOTFILES_DIR/macos/set-defaults.sh" ]; then
             echo "Applying macOS system defaults..."
             bash "$DOTFILES_DIR/macos/set-defaults.sh"
         fi
@@ -56,7 +83,7 @@ case "$OS" in
             echo "Detected RHEL/Rocky Linux"
             sudo dnf install -y epel-release
             sudo dnf install -y "${COMMON_PACKAGES[@]}" "${RHEL_PACKAGES[@]}"
-            
+
         elif [ -f /etc/debian_version ] || [ -f /etc/lsb-release ]; then
             echo "Detected Ubuntu/Debian"
             # Debian/Ubuntu repo setup for VS Code
@@ -79,6 +106,10 @@ case "$OS" in
         ;;
 esac
 
+else
+    echo "Skipping dependency installation (--no-deps)"
+fi
+
 # ---------------------------------------------------------
 # 3. App-Specific Manual Configs
 # ---------------------------------------------------------
@@ -88,7 +119,9 @@ if ! command -v antidote &> /dev/null && [ ! -d "$HOME/.antidote" ]; then
 fi
 
 # VS Code Settings (Only link if 'code' was actually installed)
-if command -v code &> /dev/null; then
+if should_skip "vscode"; then
+    echo "Skipping VS Code config (--skip)"
+elif command -v code &> /dev/null; then
     echo "Linking VS Code Settings..."
     VSCODE_USER_DIR="$HOME/.config/Code/User"
     [[ "$OS" == "Darwin" ]] && VSCODE_USER_DIR="$HOME/Library/Application Support/Code/User"
@@ -98,7 +131,28 @@ if command -v code &> /dev/null; then
 fi
 
 # ---------------------------------------------------------
-# 4. Symlink configurations with GNU Stow
+# 4. Preserve existing machine-specific configs
+# ---------------------------------------------------------
+if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
+    echo "Existing .zshrc found, moving to .zshrc.local..."
+    if [ -f "$HOME/.zshrc.local" ]; then
+        cat "$HOME/.zshrc" >> "$HOME/.zshrc.local"
+    else
+        mv "$HOME/.zshrc" "$HOME/.zshrc.local"
+    fi
+fi
+
+if [ -f "$HOME/.gitconfig" ] && [ ! -L "$HOME/.gitconfig" ]; then
+    echo "Existing .gitconfig found, moving to .gitconfig.local..."
+    if [ -f "$HOME/.gitconfig.local" ]; then
+        cat "$HOME/.gitconfig" >> "$HOME/.gitconfig.local"
+    else
+        mv "$HOME/.gitconfig" "$HOME/.gitconfig.local"
+    fi
+fi
+
+# ---------------------------------------------------------
+# 5. Symlink configurations with GNU Stow
 # ---------------------------------------------------------
 echo "Linking configurations..."
 cd "$DOTFILES_DIR"
@@ -110,7 +164,7 @@ if ! command -v stow &> /dev/null; then
 fi
 
 # Folders to ignore (logic handled elsewhere or not meant for $HOME)
-IGNORE_LIST=("vscode" "macos" "." "..")
+IGNORE_LIST=("vscode" "macos" "." ".." ${SKIP_LIST[@]+"${SKIP_LIST[@]}"})
 
 # Loop through all directories
 for dir in */; do
@@ -120,7 +174,8 @@ for dir in */; do
     # Check if folder is in the ignore list
     if [[ ! " ${IGNORE_LIST[@]} " =~ " ${folder} " ]]; then
         echo "Stowing: $folder"
-        stow --adopt -t "$HOME" -R "$folder"
+        stow --adopt -t "$HOME" "$folder"
+        stow -t "$HOME" -R "$folder"
     else
         echo "Skipping ignored folder: $folder"
     fi

@@ -12,7 +12,7 @@ vim.opt.termguicolors = true    -- True color support
 
 -- --- 2. Bootstrap Lazy.nvim ---
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
     "git", "clone", "--filter=blob:none",
     "https://github.com/folke/lazy.nvim.git", "--branch=stable",
@@ -61,7 +61,7 @@ require("lazy").setup({
 
   -- Telescope (Fuzzy Finder)
   {
-    'nvim-telescope/telescope.nvim', tag = '0.1.5',
+    'nvim-telescope/telescope.nvim', tag = '0.1.8',
     dependencies = { 'nvim-lua/plenary.nvim' }
   },
 
@@ -100,7 +100,7 @@ require("lazy").setup({
       },
       format_on_save = {
         timeout_ms = 500,
-        lsp_fallback = true,
+        lsp_format = "fallback",
       },
     },
   },

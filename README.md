@@ -14,6 +14,25 @@ chmod +x install.sh
 ./install.sh
 ```
 
+### Flags
+
+| Flag | Description |
+| :--- | :--- |
+| `--no-deps` | Skip all package installation (Homebrew, apt, dnf). Only links configs and runs stow. |
+| `--skip a,b,c` | Comma-separated list of configs to skip. Skips both the config setup step and the stow symlink for each name. |
+
+Available names for `--skip`: any top-level folder in this repo (e.g. `vscode`, `macos`, `nvim`, `tmux`, `zsh`, `git`, `ghostty`).
+
+**Examples:**
+
+```bash
+# Corp machine: skip deps and VS Code
+./install.sh --no-deps --skip vscode
+
+# Skip multiple configs
+./install.sh --skip vscode,ghostty,macos
+```
+
 ## 🛠 Features
 
 * **Shell:** `Zsh` + `Antidote` for lightning-fast plugin management.

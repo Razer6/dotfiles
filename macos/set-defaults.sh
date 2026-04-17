@@ -1,17 +1,13 @@
 #!/bin/bash
 
-# Close any open System Preferences panes to prevent overrides
-osascript -e 'tell application "System Preferences" to quit'
+# Close any open System Settings panes to prevent overrides
+osascript -e 'tell application "System Settings" to quit'
 
 echo "Configuring macOS system defaults..."
 
 ###############################################################################
 # Keyboard & Input                                                            #
 ###############################################################################
-
-# Set a blazingly fast keyboard repeat rate
-defaults write NSGlobalDomain KeyRepeat -int 1
-defaults write NSGlobalDomain InitialKeyRepeat -int 10
 
 # Disable auto-correct and "smart" substitutions that mess with code/terminal
 defaults write NSGlobalDomain NSAutomaticSpellingCorrectionEnabled -bool false
@@ -63,7 +59,8 @@ defaults write com.apple.dock show-recents -bool false
 ###############################################################################
 
 # Save screenshots to the Desktop
-defaults write com.apple.screencapture location -string "${HOME}/Desktop"
+mkdir -p "${HOME}/Screenshots"
+defaults write com.apple.screencapture location -string "${HOME}/Screenshots"
 
 # Save screenshots in PNG format (other options: BMP, GIF, JPG, PDF, TIFF)
 defaults write com.apple.screencapture type -string "png"

@@ -9,8 +9,8 @@ COMMON_PACKAGES=(
     "fzf"
     "ripgrep"
     "make"
-    "fzf"
     "zoxide"
+    "starship"
 )
 
 # Truly OS-specific tools or different names
