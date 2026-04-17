@@ -44,21 +44,6 @@ if [ -z "$TMUX" ]; then
 fi
 
 # ---------------------------------------------------------
-# Zoxide
-# ---------------------------------------------------------
-if command -v zoxide > /dev/null 2>&1; then
-    _shell_name=$(basename "$SHELL")
-    eval "$(zoxide init "$_shell_name" --cmd cd)"
-    unset _shell_name
-fi
-
-# Fuzzy Jump (zoxide + fzf)
-fj() {
-    local dir
-    dir=$(zoxide query -l | fzf --height 40% --layout=reverse --border --preview 'ls -F -G {1}') && cd "$dir"
-}
-
-# ---------------------------------------------------------
 # FZF
 # ---------------------------------------------------------
 if command -v fzf > /dev/null 2>&1; then
@@ -86,3 +71,19 @@ if command -v fzf > /dev/null 2>&1; then
 
     unset _fzf_shell _fzf_dir
 fi
+
+# ---------------------------------------------------------
+# Zoxide (must be last to avoid cd override conflicts)
+# ---------------------------------------------------------
+if command -v zoxide > /dev/null 2>&1; then
+    _shell_name="${ZSH_VERSION:+zsh}"
+    _shell_name="${_shell_name:-bash}"
+    eval "$(zoxide init "$_shell_name" --cmd cd)"
+    unset _shell_name
+fi
+
+# Fuzzy Jump (zoxide + fzf)
+fj() {
+    local dir
+    dir=$(zoxide query -l | fzf --height 40% --layout=reverse --border --preview 'ls -F -G {1}') && cd "$dir"
+}
