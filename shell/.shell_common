@@ -62,17 +62,27 @@ fj() {
 # FZF
 # ---------------------------------------------------------
 if command -v fzf > /dev/null 2>&1; then
-    [ -f ~/.fzf.bash ] && . ~/.fzf.bash
-    [ -f ~/.fzf.zsh ] && . ~/.fzf.zsh
-    [ -f /usr/share/doc/fzf/examples/key-bindings.bash ] && . /usr/share/doc/fzf/examples/key-bindings.bash
-    [ -f /usr/share/doc/fzf/examples/key-bindings.zsh ] && . /usr/share/doc/fzf/examples/key-bindings.zsh
-    [ -f /usr/share/doc/fzf/examples/completion.bash ] && . /usr/share/doc/fzf/examples/completion.bash
-    [ -f /usr/share/doc/fzf/examples/completion.zsh ] && . /usr/share/doc/fzf/examples/completion.zsh
-    if [ "$(uname)" = "Darwin" ] && command -v brew > /dev/null 2>&1; then
-        _brew_prefix="$(brew --prefix)"
-        [ -f "$_brew_prefix/opt/fzf/shell/key-bindings.bash" ] && . "$_brew_prefix/opt/fzf/shell/key-bindings.bash"
-        [ -f "$_brew_prefix/opt/fzf/shell/key-bindings.zsh" ] && . "$_brew_prefix/opt/fzf/shell/key-bindings.zsh"
-        unset _brew_prefix
-    fi
     export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --border --color=16"
+
+    _fzf_shell="${ZSH_VERSION:+zsh}"
+    _fzf_shell="${_fzf_shell:-bash}"
+
+    # Modern fzf (0.48+) has built-in shell integration
+    if fzf --"$_fzf_shell" > /dev/null 2>&1; then
+        eval "$(fzf --"$_fzf_shell")"
+    else
+        # Fall back to sourcing shell files from known paths
+        for _fzf_dir in \
+            "$HOME/.fzf" \
+            "/usr/share/doc/fzf/examples" \
+            "/usr/share/fzf/shell" \
+            "/usr/share/fzf" \
+            "${HOMEBREW_PREFIX:-/opt/homebrew}/opt/fzf/shell"; do
+            [ -f "$_fzf_dir/key-bindings.$_fzf_shell" ] && . "$_fzf_dir/key-bindings.$_fzf_shell"
+            [ -f "$_fzf_dir/completion.$_fzf_shell" ] && . "$_fzf_dir/completion.$_fzf_shell"
+        done
+        [ -f "$HOME/.fzf.$_fzf_shell" ] && . "$HOME/.fzf.$_fzf_shell"
+    fi
+
+    unset _fzf_shell _fzf_dir
 fi
