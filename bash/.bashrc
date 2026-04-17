@@ -38,10 +38,19 @@ fi
 [ -f ~/.bashrc.local ] && . ~/.bashrc.local
 
 # ---------------------------------------------------------
-# 6. Prompt (must be last to avoid being overridden)
+# 6. Prompt
 # ---------------------------------------------------------
-if command -v starship > /dev/null 2>&1; then
-    eval "$(starship init bash)"
-else
-    PS1='\[\033[36m\]\u@\h \[\033[34m\]\W \[\033[0m\]\$ '
+_init_prompt() {
+    if command -v starship > /dev/null 2>&1; then
+        eval "$(starship init bash)"
+    else
+        PS1='\[\033[36m\]\u@\h \[\033[34m\]\W \[\033[0m\]\$ '
+    fi
+}
+
+# For non-login shells, init prompt now.
+# For login shells, .bash_profile calls _init_prompt after
+# system profile scripts that may clear PROMPT_COMMAND.
+if ! shopt -q login_shell; then
+    _init_prompt
 fi
