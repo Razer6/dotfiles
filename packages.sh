@@ -1,6 +1,5 @@
 # Same names across Homebrew, DNF, and APT
 COMMON_PACKAGES=(
-    "stow"
     "git"
     "neovim"
     "zsh"

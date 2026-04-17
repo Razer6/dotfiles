@@ -152,33 +152,47 @@ if [ -f "$HOME/.gitconfig" ] && [ ! -L "$HOME/.gitconfig" ]; then
 fi
 
 # ---------------------------------------------------------
-# 5. Symlink configurations with GNU Stow
+# 5. Symlink configurations
 # ---------------------------------------------------------
 echo "Linking configurations..."
-cd "$DOTFILES_DIR"
 
-# Ensure Stow is available
-if ! command -v stow &> /dev/null; then
-    echo "Error: GNU Stow is not installed."
-    exit 1
-fi
-
-# Folders to ignore (logic handled elsewhere or not meant for $HOME)
 IGNORE_LIST=("vscode" "macos" "." ".." ${SKIP_LIST[@]+"${SKIP_LIST[@]}"})
 
-# Loop through all directories
-for dir in */; do
-    # Remove trailing slash
-    folder=${dir%/}
-    
-    # Check if folder is in the ignore list
-    if [[ ! " ${IGNORE_LIST[@]} " =~ " ${folder} " ]]; then
-        echo "Stowing: $folder"
-        stow --adopt -t "$HOME" "$folder"
-        stow -t "$HOME" -R "$folder"
-    else
-        echo "Skipping ignored folder: $folder"
+link_package() {
+    local pkg_dir="${1%/}"
+    local pkg_name
+    pkg_name=$(basename "$pkg_dir")
+
+    find "$pkg_dir" -type f | while read -r src; do
+        local rel="${src#$pkg_dir/}"
+        local dest="$HOME/$rel"
+        local dest_dir
+        dest_dir=$(dirname "$dest")
+
+        mkdir -p "$dest_dir"
+
+        if [ -L "$dest" ]; then
+            rm "$dest"
+        elif [ -f "$dest" ]; then
+            echo "  Backing up: ~/$rel -> ~/${rel}.bak"
+            mv "$dest" "${dest}.bak"
+        fi
+
+        ln -sf "$src" "$dest"
+        echo "  Linked: ~/$rel"
+    done
+}
+
+for dir in "$DOTFILES_DIR"/*/; do
+    folder=$(basename "$dir")
+
+    if [[ " ${IGNORE_LIST[*]} " =~ " ${folder} " ]]; then
+        echo "Skipping: $folder"
+        continue
     fi
+
+    echo "Linking: $folder"
+    link_package "$dir"
 done
 
 echo "Done! Installation finished successfully."
