@@ -8,10 +8,6 @@ if [[ "$(uname)" == "Darwin" ]]; then
     fi
 fi
 
-# Load completion system
-autoload -Uz compinit
-compinit -i
-
 # ---------------------------------------------------------
 # 2. Antidote Plugin Manager
 # ---------------------------------------------------------
@@ -25,6 +21,14 @@ fi
 
 if [[ -n "${ANTIDOTE_DIR:-}" ]]; then
     source "$ANTIDOTE_DIR/antidote.zsh"
+    # Add zsh-completions to fpath before compinit
+    fpath+=($(antidote path zsh-users/zsh-completions)/src)
+fi
+
+autoload -Uz compinit
+compinit -i
+
+if [[ -n "${ANTIDOTE_DIR:-}" ]]; then
     antidote load ~/.zsh_plugins.txt
 fi
 
@@ -51,6 +55,10 @@ zstyle ':completion:*' menu select
 zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' # Case-insensitive
 zstyle ':completion:*' list-colors "${(s.:.)LS_COLORS}"
 zstyle ':completion:*:paths' accept-exact 'path'
+
+# Tab accepts autosuggestion if present, otherwise does normal completion
+bindkey '^I' complete-word
+ZSH_AUTOSUGGEST_ACCEPT_WIDGETS+=(complete-word)
 
 # ---------------------------------------------------------
 # 5. Aliases & Editor
