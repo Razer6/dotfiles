@@ -78,7 +78,7 @@ fi
 if command -v zoxide > /dev/null 2>&1; then
     _shell_name="${ZSH_VERSION:+zsh}"
     _shell_name="${_shell_name:-bash}"
-    eval "$(zoxide init "$_shell_name" --cmd cd)"
+    eval "$(zoxide init "$_shell_name")"
     unset _shell_name
 fi
 
