@@ -19,6 +19,8 @@ $lua\
 [](fg:teal)\
 $character"""
 
+right_format = ""
+
 [os]
 disabled = false
 style = "bg:blue fg:crust"
